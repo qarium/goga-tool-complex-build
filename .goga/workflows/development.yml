@@ -1,0 +1,22 @@
+prompt: |
+  Answer (feedbacks, proposes, questions:`*.question.json` and etc) in Russian language.
+  Any content written to the project files is in English.
+
+  Requirements:
+  - For development use venv outside the project, in /opt/project
+
+memory:
+  max_rules: 15
+  commit: true
+
+stages:
+  prototype-architecture:
+    reflect:
+      file: architecture.md
+  code-design:
+    reflect:
+      file: code-design.md
+      mode: r
+  design-review:
+    reflect:
+      file: code-design.md

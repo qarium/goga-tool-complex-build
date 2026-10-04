@@ -1,0 +1,54 @@
+language: python
+
+image: goga-tool-complex-build:latest
+dockerfile: .goga/Dockerfile
+
+.base-ref: &base-ref 0.0.x
+
+.claude-env: &claude-env
+  ANTHROPIC_MODEL: opus
+  ANTHROPIC_BASE_URL: "https://api.z.ai/api/anthropic"
+
+build:
+  agent: claude
+  env:
+    <<: *claude-env
+    ANTHROPIC_DEFAULT_OPUS_MODEL: "glm-5.1"
+  review:
+    agent: claude
+    base_ref: *base-ref
+    env:
+      <<: *claude-env
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "glm-5.3[1m]"
+
+pipeline:
+  agent: claude
+  env:
+    <<: *claude-env
+    ANTHROPIC_DEFAULT_OPUS_MODEL: "glm-5.3[1m]"
+
+tools:
+  mkdocs: latest
+  autonomous: latest
+  simple-build: latest
+
+usages:
+  github:
+    goga:
+      git: git@github.com:qarium/goga.git
+      ref: 2.0.x
+      root: goga
+
+codemanifest:
+  usages:
+    conventions: .goga/usages/conventions.md
+  annotations: |
+    Use `conventions` for code writing rules and testing.
+
+topics:
+  base_ref: *base-ref
+
+lint:
+  ignore:
+    - build/
+    - .venv/

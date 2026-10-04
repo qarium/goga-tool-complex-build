@@ -1,0 +1,44 @@
+docs_dir: docs
+
+site_name: Goga-tool-complex-build
+site_description: Complex build configuration for goga build
+site_url: https://qarium.github.io/goga-tool-complex-build/
+repo_url: https://github.com/qarium/goga-tool-complex-build
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: https://avatars.githubusercontent.com/u/262344922?s=200&v=4
+  palette:
+    - scheme: default
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+        media: "(prefers-color-scheme: light)"
+    - scheme: slate
+      primary: custom
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+        media: "(prefers-color-scheme: dark)"
+  features:
+    - navigation.tabs
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+
+nav: []
+
+plugins:
+  - search

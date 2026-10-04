@@ -1,0 +1,6 @@
+prompt: |
+  Answer (feedbacks, proposes, questions:`*.question.json` and etc) in Russian language.
+  Any content written to the project files is in English.
+
+  Requirements:
+  - For project research use venv outside the project, in /opt/project

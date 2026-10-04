@@ -1,0 +1,4 @@
+_commit: 1.0.1
+_src_path: git@github.com:qarium/python-project-tpl.git
+package_name: goga_tool_complex_build
+project_description: Complex build configuration for goga build
