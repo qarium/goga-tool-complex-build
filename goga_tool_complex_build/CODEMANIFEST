@@ -1,0 +1,79 @@
+Usages:
+  conventions: .goga/usages/conventions.md
+  config_amendment: .goga/usages/github/goga/config/registering-hooks.md
+  hook_registration: .goga/usages/github/goga/hooks/registering-hooks.md
+  goga_dependency: .goga/usages/cooks/goga-dependency.md
+
+Annotations: |
+  Use `conventions` for code writing rules and testing.
+  Use `hook_registration` from Usages for the facade callback and subscription contract.
+  Use `config_amendment` from Usages for the amendment view, silence markers, and merge semantics.
+  Use `goga_dependency` from Usages for the goga dependency policy.
+
+  The cell is hook-only: no CLI facade and no runtime import of goga — platform types
+  (HookRegistrar, ConfigAmendment) are referenced under TYPE_CHECKING only, and the
+  package facade stays import-clean with or without goga installed.
+  The package facade re-exports the contract API through __all__.
+  Contribute amendments exclusively through the apply-where-silent form; never the override form.
+
+---
+
+"register_hooks(hooks: HookRegistrar)":
+  location: registration.py
+  annotations: |
+    Subscribe the tool's single review-presets hook to the configuration amendment action.
+
+    `hooks`: platform registration surface delivered to the facade callback
+
+    Algorithm:
+    1. Subscribe `review_presets` to the config / amend_config address under the hook
+       name review_presets, using the subscribe operation of `hooks` defined in `hook_registration`
+
+    Requirements:
+    - Hook name stays unique per tool per address
+
+    Constraints:
+    - Subscribe to no other domain action
+    - Do not validate any configuration leaf
+
+"review_presets(context: ConfigAmendment)":
+  location: registration.py
+  annotations: |
+    Contribute the four comprehensive-review presets and guard the authored strategy.
+
+    `context`: read-and-amend view over the authored configuration, delivered per `config_amendment`
+
+    Algorithm:
+    1. Read the authored leaf build.review.strategy from the configuration of `context`;
+       absent branches read as absent
+    2. If the authored value is present and is not full — raise ValueError whose message
+       names the path build.review.strategy and never the authored value
+    3. Buffer four apply-where-silent amendments through `context`: build.review.strategy
+       set to full, build.review.max_iterations set to 5,
+       build.review.additional.patience set to 1, build.review.additional.max_iterations
+       set to 3
+
+    Requirements:
+    - The guard raise of step 2 happens before any amendment is buffered
+    - The guard message is the fixed strategy-conflict message: authored value at
+      build.review.strategy conflicts with the tool's purpose; remove the authored
+      strategy or uninstall the tool
+    - Amendments are unconditional — the deliberate reads of the configuration are the
+      guard leaf of step 1 only
+    - Authored-wins is owned by the merge layer — never re-derived here
+    - The exact write footprint is the four leaf paths of step 3 and nothing else
+
+    Constraints:
+    - Never use the override form of amendment — the presets never overwrite authored values
+    - Never print or embed configuration values in any output or error message
+    - Do not validate any leaf beyond the strategy guard
+
+---
+
+Author: Goga
+CreatedAt: 04/10/26
+Description: |
+  Review presets for comprehensive builds: the tool's single subscription to the goga
+  configuration amendment action, contributing the four review leaves — the full
+  strategy, the review-level iteration cap, and the two external review knobs — and
+  guarding the strategy conflict.
