@@ -38,7 +38,12 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.superfences
 
-nav: []
+nav:
+  - Home: index.md
+  - Comprehensive review: comprehensive-review.md
+  - Architecture: architecture.md
+  - API:
+      - Package facade: api/facade.md
 
 plugins:
   - search
