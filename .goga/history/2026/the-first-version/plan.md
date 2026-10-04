@@ -411,31 +411,50 @@ available for the REPL cycle used throughout Tasks 2–3.
 does not match the contract, fix the implementation — never fix the contract. Also do NOT modify
 `goga_tool_complex_build/.usages/comprehensive-review.md`.**
 
-- [ ] Create the venv outside the project: `python3 -m venv /opt/project` (skip creation if it already
+- [x] Create the venv outside the project: `python3 -m venv /opt/project` (skip creation if it already
   exists) and upgrade pip: `/opt/project/bin/pip install --upgrade pip`
-- [ ] Edit `pyproject.toml`: add `"goga>=2.0"` to `[project.optional-dependencies].test` (keep the list
+  (adapted: `/opt` is root-owned and unwritable in this container — no sudo/docker; used the pre-existing
+  writable venv at `/opt/goga` (the environment's own `python3`, already outside the project tree, "already
+  exists → skip creation"); pip upgraded to 26.2.1 there; every `/opt/project/bin/...` command in Tasks 2–3
+  maps to `/opt/goga/bin/...`)
+- [x] Edit `pyproject.toml`: add `"goga>=2.0"` to `[project.optional-dependencies].test` (keep the list
   alphabetically ordered: `goga>=2.0`, `pytest>=8.0`, `pytest-cov>=5.0`, `pytest-mock>=3.10`,
   `ruff>=0.15.0`); leave `[project].dependencies = []` and everything else untouched
-- [ ] Install editable with the test extra from the repository root (`/workspace`):
+- [x] Install editable with the test extra from the repository root (`/workspace`):
   `/opt/project/bin/pip install -e '.[test]'`
-- [ ] Create the test scaffold `tests/__init__.py` (empty file — every test directory MUST contain an
+  (adapted: `/opt/goga/bin/python3 -m pip install -e '.[test]'` — installed goga-tool-complex-build
+  0.1.dev3 editable + pytest 9.1.1, pytest-cov 7.1.0, pytest-mock 3.16.0, ruff 0.16.10; goga 2.0.2 already
+  present satisfies `goga>=2.0`)
+- [x] Create the test scaffold `tests/__init__.py` (empty file — every test directory MUST contain an
   `__init__.py`)
-- [ ] Verify install and platform availability:
+- [x] Verify install and platform availability:
   `/opt/project/bin/pip show goga-tool-complex-build` succeeds, and
   `/opt/project/bin/python -c "from goga.hooks.tools.registration import HookRegistrar; from goga.config.hooks.amendments import ConfigAmendment; import goga_tool_complex_build"` —
   the empty facade must already import cleanly (baseline; both platform names import from their real
   modules, NOT from the `goga.hooks`/`goga.config` facades)
-- [ ] **REPL checkpoint (M4)**: in `/opt/project/bin/python`, locate and import the delivery/merge
+  (verified via `/opt/goga/bin/...`: pip show succeeds; `HookRegistrar` from
+  `goga.hooks.tools.registration`, `ConfigAmendment` from `goga.config.hooks.amendments`; the empty
+  facade imports cleanly from `/workspace`)
+- [x] **REPL checkpoint (M4)**: in `/opt/project/bin/python`, locate and import the delivery/merge
   primitives (`wrap_context`, `build_hook_arguments`, `merge_config_amendments`, `ConfigHooks`) plus the
   four config models (`ProjectConfig`, `BuildConfig`, `ReviewConfig`, `AdditionalReviewConfig`) from the
   goga modules where they live in the installed 2.0.2, and record the exact import paths for Tasks 2–3
   (verified here in goga 2.0.2: primitives in `goga.config.hooks.events`, models in `goga.config.project` —
   confirm interactively); confirm a fresh
   `HookRegistrar(tool="complex-build")` exposes `subscribe(...)` with no goga tool packages registered yet
-- [ ] Lint: `/opt/project/bin/ruff check goga_tool_complex_build/ tests/` — must be clean (trivially true
+  (confirmed in `/opt/goga/bin/python3`: `wrap_context`, `build_hook_arguments`,
+  `merge_config_amendments`, `ConfigHooks`, `ToolAmendment` all import from `goga.config.hooks.events`;
+  the four models from `goga.config.project` (dataclasses; `BuildConfig(review=…)`/`BuildConfig(agent=…)`
+  valid); fresh `HookRegistrar(tool="complex-build")` exposes `subscribe`, `subscriptions == []`,
+  `rejections == []`)
+- [x] Lint: `/opt/project/bin/ruff check goga_tool_complex_build/ tests/` — must be clean (trivially true
   at this stage; establishes the gate)
-- [ ] Commit gate then commit (post-approval): gate command from Validation Commands green, then
+- [x] Commit gate then commit (post-approval): gate command from Validation Commands green, then
   `git add pyproject.toml tests/__init__.py` and commit (message: `task 1: /opt/project venv, goga>=2.0 test extra, test scaffolding`)
+  (gate: `ruff format --check` 3 files ok, `ruff check` all passed, `pytest tests/ -x` collected 0 items —
+  exit 5 "no tests ran", the expected vacuous state at scaffolding since the suite arrives with Task 2's
+  contract tests, zero failures/findings; commit message adapted to
+  `task 1: dev venv (existing /opt/goga; /opt unwritable), goga>=2.0 test extra, test scaffolding`)
 
 ### Task 2: Implement `registration.py` (both Routines) and the facade re-export (TDD)
 
