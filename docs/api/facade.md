@@ -41,7 +41,7 @@ Algorithm:
    names the path `build.review.strategy` and never the authored value
 3. Buffer four apply-where-silent amendments through `context`: `build.review.strategy` set
    to `full`, `build.review.max_iterations` set to `5`, `build.review.additional.patience`
-   set to `2`, `build.review.additional.max_iterations` set to `3`
+   set to `1`, `build.review.additional.max_iterations` set to `3`
 
 The guard raise of step 2 happens before any amendment is buffered, and its message is the
 fixed strategy-conflict message: authored value at `build.review.strategy` conflicts with the
@@ -59,7 +59,7 @@ Configuration values are never printed or embedded in any output or error messag
 |---|---|
 | `build.review.strategy` | `full` |
 | `build.review.max_iterations` | `5` |
-| `build.review.additional.patience` | `2` |
+| `build.review.additional.patience` | `1` |
 | `build.review.additional.max_iterations` | `3` |
 
 All four values are fixed constants; the tool defines no mapping between the iteration caps —

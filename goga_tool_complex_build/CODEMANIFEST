@@ -50,7 +50,7 @@ Annotations: |
        names the path build.review.strategy and never the authored value
     3. Buffer four apply-where-silent amendments through `context`: build.review.strategy
        set to full, build.review.max_iterations set to 5,
-       build.review.additional.patience set to 2, build.review.additional.max_iterations
+       build.review.additional.patience set to 1, build.review.additional.max_iterations
        set to 3
 
     Requirements:

@@ -14,7 +14,7 @@ four review presets wherever the authored configuration is silent:
 |---|---|
 | `build.review.strategy` | `full` |
 | `build.review.max_iterations` | `5` |
-| `build.review.additional.patience` | `2` |
+| `build.review.additional.patience` | `1` |
 | `build.review.additional.max_iterations` | `3` |
 
 Absent intermediate branches (`build.review`, `build.review.additional`)
@@ -36,7 +36,7 @@ build:
     strategy: full
     max_iterations: 5
     additional:
-      patience: 2
+      patience: 1
       max_iterations: 3
 ```
 
@@ -70,7 +70,7 @@ like any other authored value:
 build:
   review:
     additional:
-      patience: 4   # authored — wins over the preset 2
+      patience: 4   # authored — wins over the preset 1
       max_iterations: 0   # authored zero — wins over the preset 3
 ```
 

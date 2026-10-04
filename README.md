@@ -16,7 +16,7 @@ amendments:
 
 - `build.review.strategy` set to `full` — the comprehensive review form;
 - `build.review.max_iterations` set to `5` — the review-level iteration cap;
-- `build.review.additional.patience` set to `2` and
+- `build.review.additional.patience` set to `1` and
   `build.review.additional.max_iterations` set to `3` — together bounding the external review.
 
 Each preset applies only where the authored configuration is silent at the path. Authored-wins

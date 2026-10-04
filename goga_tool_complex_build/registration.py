@@ -46,5 +46,5 @@ def review_presets(context: ConfigAmendment) -> None:
 
     context.set("build.review.strategy", "full")
     context.set("build.review.max_iterations", 5)
-    context.set("build.review.additional.patience", 2)
+    context.set("build.review.additional.patience", 1)
     context.set("build.review.additional.max_iterations", 3)

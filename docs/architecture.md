@@ -37,7 +37,7 @@ surface — the host-side commands (`build`, `pipeline`, `lint`, `contract`, `in
    and the tool's whole contribution is discarded.
 6. Otherwise the hook buffers four apply-where-silent amendments through `context.set`:
    `build.review.strategy` = `full`, `build.review.max_iterations` = `5`,
-   `build.review.additional.patience` = `2`, `build.review.additional.max_iterations` = `3`.
+   `build.review.additional.patience` = `1`, `build.review.additional.max_iterations` = `3`.
 7. The platform merge keeps authored values per path — the presets fill only what the author
    left silent — and prints the amendment summary to stderr. The amended configuration exists
    only in-memory, for the duration of the run.

@@ -21,14 +21,14 @@ from goga_tool_complex_build import registration
 PRESET_SET_CALLS = [
     ("build.review.strategy", "full"),
     ("build.review.max_iterations", 5),
-    ("build.review.additional.patience", 2),
+    ("build.review.additional.patience", 1),
     ("build.review.additional.max_iterations", 3),
 ]
 
 PRESET_BUFFERED_AMENDMENTS = [
     ("build.review.strategy", "set", "full"),
     ("build.review.max_iterations", "set", 5),
-    ("build.review.additional.patience", "set", 2),
+    ("build.review.additional.patience", "set", 1),
     ("build.review.additional.max_iterations", "set", 3),
 ]
 
@@ -228,7 +228,7 @@ class TestDelivery:
         review = overlay.config.build.review
         assert review.strategy == "full"
         assert review.max_iterations == 5
-        assert review.additional.patience == 2
+        assert review.additional.patience == 1
         assert review.additional.max_iterations == 3
 
         assert len(overlay.applied) == 4
@@ -283,7 +283,7 @@ class TestCheckpointIntegration:
         review = overlay.config.build.review
         assert review.strategy == "full"
         assert review.max_iterations == 5
-        assert review.additional.patience == 2
+        assert review.additional.patience == 1
         assert review.additional.max_iterations == 3
 
         complex_build_records = [record for record in overlay.applied if record.tool == "complex-build"]
