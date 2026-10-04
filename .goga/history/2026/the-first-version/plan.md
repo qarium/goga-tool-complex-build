@@ -483,9 +483,10 @@ exactly those, nothing more.
 **CRITICAL: `CODEMANIFEST` files — read-only contract definitions. Do NOT modify them. If implementation
 does not match the contract, fix the implementation — never fix the contract.**
 
-- [ ] **Declaration**: declare task 2 in progress — implementing `register_hooks` + `review_presets` at
+- [x] **Declaration**: declare task 2 in progress — implementing `register_hooks` + `review_presets` at
   `location: registration.py` and the facade re-export
-- [ ] **Contract tests** (write first — expected to FAIL before implementation): create
+  (declared in `.ralphex/progress/progress-plan.txt`, iteration "task iteration 2")
+- [x] **Contract tests** (write first — expected to FAIL before implementation): create
   `tests/conftest.py` and `tests/test_init.py`, `tests/test_registration.py` with:
   - `tests/conftest.py` — shared fixtures per the design; platform imports verified in goga 2.0.2:
     `from goga.config.project import AdditionalReviewConfig, BuildConfig, ProjectConfig, ReviewConfig`
@@ -506,7 +507,9 @@ does not match the contract, fix the implementation — never fix the contract.*
     parameter `hooks`; `review_presets` has exactly the parameter `context`; both accept no variadics
   - Run `/opt/project/bin/python -m pytest tests/ -x` — the contract tests must FAIL at this stage
     (`ImportError`/`AttributeError`: the names do not exist yet)
-- [ ] **Code**: create `goga_tool_complex_build/registration.py` — module docstring;
+    (verified via `/opt/goga/bin/python -m pytest tests/ -x`: ImportError "cannot import name
+    'registration' from 'goga_tool_complex_build'" — exactly the expected red state before coding)
+- [x] **Code**: create `goga_tool_complex_build/registration.py` — module docstring;
   `from __future__ import annotations`; `TYPE_CHECKING` block importing `HookRegistrar` from
   `goga.hooks.tools.registration` and `ConfigAmendment` from `goga.config.hooks.amendments`;
   **no runtime goga import; no logging; no print**; then:
@@ -521,17 +524,23 @@ does not match the contract, fix the implementation — never fix the contract.*
     order: `("build.review.strategy", "full")`, `("build.review.max_iterations", 5)`,
     `("build.review.additional.patience", 2)`, `("build.review.additional.max_iterations", 3)`;
     Google docstring with `Args` and `Raises: ValueError`
-- [ ] **Code**: fill `goga_tool_complex_build/__init__.py` — module docstring;
+- [x] **Code**: fill `goga_tool_complex_build/__init__.py` — module docstring;
   `from .registration import register_hooks, review_presets` (relative import, re-export by identity);
   `__all__ = ["register_hooks", "review_presets"]`; import-clean without goga
-- [ ] **Interface verification**: `/opt/project/bin/python -m pytest tests/test_init.py
+- [x] **Interface verification**: `/opt/project/bin/python -m pytest tests/test_init.py
   tests/test_registration.py::TestContract -v` — all contract tests pass
-- [ ] **REPL checkpoint (M4)**: in the live `/opt/project` REPL, hot-reload after each edit
+  (verified via `/opt/goga/bin/python -m pytest tests/test_init.py
+  tests/test_registration.py::TestContract -v`: 2 passed)
+- [x] **REPL checkpoint (M4)**: in the live `/opt/project` REPL, hot-reload after each edit
   (`importlib.reload`) and interactively confirm against a `recording_view`: silent config → exactly the
   four pairs in order; `strategy="short"` → the exact guard message and zero buffered sets;
   `strategy="full"` → still four sets (unconditional); `register_hooks(real HookRegistrar)` →
   1 subscription, 0 rejections — then let the migrated source files stand as the artifact
-- [ ] **Logic tests** (write after implementation, in `tests/test_registration.py`): the 10 unit-level
+  (verified in `/opt/goga/bin/python -i` with `importlib.reload(registration)` + `importlib.reload(facade)`:
+  silent → the four pairs in order, force_calls []; "short" → exact fixed message, zero sets; "full" →
+  4 sets including strategy; real HookRegistrar(tool="complex-build") → 1 subscription, 0 rejections;
+  facade identity re-export intact)
+- [x] **Logic tests** (write after implementation, in `tests/test_registration.py`): the 10 unit-level
   design scenarios, with their design-verified setups and assertion literals:
   - `TestRegisterHooks.test_register_hooks_subscribes_single_hook_to_config_amend_config` —
     `_FakeRegistrar` recording `(domain, action, name, hook)`; assert `len(fake.calls) == 1`,
@@ -566,17 +575,27 @@ does not match the contract, fix the implementation — never fix the contract.*
   - `TestReviewPresets.test_review_presets_reads_strategy_chain_only` — unread branches planted with
     `trap` (`pipeline=trap`, `additional=None` etc. per the design setup); completing without tripping
     the traps and asserting the four exact pairs proves the read footprint
-- [ ] **Debugging**: `/opt/project/bin/python -m pytest tests/ -x` — fix implementation code until all
+- [x] **Debugging**: `/opt/project/bin/python -m pytest tests/ -x` — fix implementation code until all
   tests pass (do NOT fix test code; do NOT touch the contract)
-- [ ] **Contract re-verification**: facade importable and identity re-exports intact; signatures exactly
+  (14 items passed on the first full run after implementation; the only fix needed was an import-path
+  typo in the new test module itself — the implementation never changed after its first write)
+- [x] **Contract re-verification**: facade importable and identity re-exports intact; signatures exactly
   `(hooks)` / `(context)`; guard message and four-pair footprint unchanged; no runtime goga import in
   either file (only `TYPE_CHECKING`)
-- [ ] **Lint**: `/opt/project/bin/ruff format goga_tool_complex_build/ tests/` then
+  (verified in a fresh `/opt/goga/bin/python -c`: facade re-exports by identity, signatures `(hooks)` /
+  `(context)`, `'goga' not in sys.modules` after import, and grep shows no module-level goga import)
+- [x] **Lint**: `/opt/project/bin/ruff format goga_tool_complex_build/ tests/` then
   `/opt/project/bin/ruff check goga_tool_complex_build/ tests/` — zero findings; decompose if needed
-- [ ] **Completion**: mark this task's checkboxes complete
-- [ ] Commit gate then commit (post-approval): gate green, then
+  (final state: format "7 files left unchanged", check "All checks passed!"; the three initial findings —
+  `collections.abc.Callable` imports, import order, PT011 broad ValueError — were fixed in the code, no
+  suppressions added)
+- [x] **Completion**: mark this task's checkboxes complete
+- [x] Commit gate then commit (post-approval): gate green, then
   `git add goga_tool_complex_build/registration.py goga_tool_complex_build/__init__.py tests/conftest.py tests/test_registration.py tests/test_init.py`
   and commit (message: `task 2: register_hooks and review_presets routines, facade re-export, unit tests`)
+  (gate via /opt/goga: ruff format --check 7 files ok, ruff check all passed, pytest tests/ -x 14 passed,
+  facade import check OK; PT011 satisfied with match=re.escape(fixed message) alongside the exact
+  equality assertions)
 
 ### Task 3: Integration tests through the real platform primitives (integration)
 
