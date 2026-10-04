@@ -3,7 +3,7 @@ language: python
 image: goga-tool-complex-build:latest
 dockerfile: .goga/Dockerfile
 
-.base-ref: &base-ref 0.0.x
+.base-ref: &base-ref 1.0.x
 
 .claude-env: &claude-env
   ANTHROPIC_MODEL: opus
