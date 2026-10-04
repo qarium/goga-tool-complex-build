@@ -619,20 +619,31 @@ likewise from `goga.config.hooks.events`.
 
 **CRITICAL: `CODEMANIFEST` files — read-only contract definitions. Do NOT modify them.**
 
-- [ ] **Declaration**: declare task 3 in progress — integration tests for cell ↔ platform interaction
-- [ ] **REPL checkpoint (M4)**: before writing the tests, reproduce the checkpoint interactively in the
+- [x] **Declaration**: declare task 3 in progress — integration tests for cell ↔ platform interaction
+  (declared in `.ralphex/progress/progress-plan.txt`, iteration "task iteration 3", with the REPL findings
+  and the one environment deviation recorded there)
+- [x] **REPL checkpoint (M4)**: before writing the tests, reproduce the checkpoint interactively in the
   `/opt/project` REPL: `overlay = ConfigHooks().amend_config(config=ProjectConfig(language="python",
   image=None, dockerfile=None, build=None, pipeline=None))` — confirm the effective
   `full / 5 / 2 / 3`, the four `complex-build` applied records, the exact summary lines, and
   `config.build is None`; then migrate the verified expectations into the tests below
-- [ ] **Code**: `TestDelivery.test_review_presets_through_real_delivery_projection` — recording view over
+  (verified in `/opt/goga/bin/python`: delivery projection delivers only `context` by keyword; the silent-base
+  merge yields effective `full/5/2/3`, the four `complex-build` records, the exact summary lines, and leaves
+  `base.build is None`; the authored `full 5 4 0` base yields 2 applied paths; the goga-blocked subprocess
+  returns 0. One environment deviation: the adapted shared venv `/opt/goga` also carries the platform's own
+  `goga_tool_*` packages — `goga-tool-simple-build` contests 3 of the 4 preset paths and wins them
+  (later-tool-wins), so a bare checkpoint yields `short/5/1/3`; the checkpoint test therefore pins the
+  environment seam `goga.hooks.registry.state.enumerate_tool_packages` to the real enumeration filtered to
+  `goga_tool_complex_build` — facade import, registration, delivery, and merge stay the real platform code;
+  the foreign tools were NOT uninstalled, they serve this workspace's own platform runs)
+- [x] **Code**: `TestDelivery.test_review_presets_through_real_delivery_projection` — recording view over
   `project_config(build=None)`; real `proxy = wrap_context(view)`; real
   `args = build_hook_arguments(review_presets, proxy, object())`; call `review_presets(**args)`; assert
   `sorted(args) == ["context"]`, the four exact `set_calls` pairs, and
   `[(a.path, a.intent, a.value) for a in view._amendments.values()] ==
   [("build.review.strategy", "set", "full"), ("build.review.max_iterations", "set", 5),
   ("build.review.additional.patience", "set", 2), ("build.review.additional.max_iterations", "set", 3)]`
-- [ ] **Code**: `TestDelivery.test_presets_merge_into_effective_review_config` — deliver into a real
+- [x] **Code**: `TestDelivery.test_presets_merge_into_effective_review_config` — deliver into a real
   `ConfigAmendment` over silent `base`, build
   `ToolAmendment(tool="complex-build", amendments=list(view._amendments.values()))`, call real
   `merge_config_amendments(base, [contribution])`; assert
@@ -643,35 +654,45 @@ likewise from `goga.config.hooks.events`.
   "- complex-build set build.review.max_iterations", "- complex-build set build.review.additional.patience",
   "- complex-build set build.review.additional.max_iterations"]`,
   and `base.build is None` (authored object untouched)
-- [ ] **Code**: `TestDelivery.test_presets_merge_honors_authored_wins_on_authored_leaves` — base with
+- [x] **Code**: `TestDelivery.test_presets_merge_honors_authored_wins_on_authored_leaves` — base with
   `ReviewConfig(strategy=None, additional=AdditionalReviewConfig(patience=4, max_iterations=0))`
   (authored `4` and authored zero); assert effective `strategy == "full"`, `max_iterations == 5`,
   `additional.patience == 4`, `additional.max_iterations == 0`, and
   `[r.path for r in overlay.applied] == ["build.review.strategy", "build.review.max_iterations"]`
   (authored leaves — including explicit zeros — win; the two corresponding sets are dropped)
-- [ ] **Code**: `TestInit.test_facade_imports_without_goga_installed` — subprocess
+- [x] **Code**: `TestInit.test_facade_imports_without_goga_installed` — subprocess
   (`sys.executable -c`, `cwd` at repository root) that installs `sys.modules["goga"] = None` (plus the
   known submodule keys) BEFORE importing `goga_tool_complex_build`, then prints `__all__` and the two
   callables; assert `result.returncode == 0` and both names appear in `result.stdout`
   (mechanism: `None` in `sys.modules` makes `import goga` raise `ImportError` — proves
-  `from __future__ import annotations` + `TYPE_CHECKING` keep the facade goga-free at runtime)
-- [ ] **Code**: `TestCheckpointIntegration.test_tool_amends_through_real_checkpoint` — the real
+  `from __future__ import annotations` + `TYPE_CHECKING` keep the facade goga-free at runtime;
+  blocked keys: `goga`, `goga.config`, `goga.hooks`)
+- [x] **Code**: `TestCheckpointIntegration.test_tool_amends_through_real_checkpoint` — the real
   orchestration: `overlay = ConfigHooks().amend_config(config=config)` with the package installed
   editable in the `/opt/project` venv; assert effective `full / 5 / 2 / 3`, the four
   `complex-build`-filtered applied records (`r.tool == "complex-build"`, `r.intent == "set"`),
   `"- complex-build set build.review.strategy" in overlay.summary_lines`, and
   `config.build is None` (tool-name-filtered assertions keep foreign `goga_tool_*` packages from
-  breaking the test)
-- [ ] **Run validation**: `/opt/project/bin/python -m pytest tests/ -x` — the full suite
+  breaking the test; additionally — see the REPL note — the enumeration seam is pinned to
+  `goga_tool_complex_build` because in the shared `/opt/goga` venv `goga-tool-simple-build` would
+  otherwise win the contested paths, and winner-take-all merge drops the `complex-build` records
+  entirely, not just the effective values)
+- [x] **Run validation**: `/opt/project/bin/python -m pytest tests/ -x` — the full suite
   (all 16 design scenarios + the contract-shape test) passes; facade check
   `/opt/project/bin/python -c "from goga_tool_complex_build import register_hooks, review_presets"`
   succeeds in a plain interpreter
-- [ ] **Lint**: `/opt/project/bin/ruff format goga_tool_complex_build/ tests/` then
+  (verified via `/opt/goga/bin/...`: 19 items passed in 0.07s — exactly the parametrized expansion; facade
+  check OK)
+- [x] **Lint**: `/opt/project/bin/ruff format goga_tool_complex_build/ tests/` then
   `/opt/project/bin/ruff check goga_tool_complex_build/ tests/` — zero findings
-- [ ] **Completion**: mark this task's checkboxes complete
-- [ ] Commit gate then commit (post-approval): gate green, then
+  (final state: format "7 files left unchanged", check "All checks passed!"; the single finding — PLW1510
+  `subprocess.run` without explicit `check` — was fixed in the code with `check=False`, no suppressions)
+- [x] **Completion**: mark this task's checkboxes complete
+- [x] Commit gate then commit (post-approval): gate green, then
   `git add tests/test_registration.py tests/test_init.py` and commit
   (message: `task 3: delivery, merge, and real-checkpoint integration tests`)
+  (gate via /opt/goga: ruff format --check 7 files ok, ruff check all passed, pytest tests/ -x 19 passed;
+  plan update committed together with the tests)
 
 ---
 
@@ -694,29 +715,29 @@ All commands run from the repository root (`/workspace`) with the `/opt/project`
 
 ## Completion Criteria
 
-- [ ] Every contract entity is implemented in the correct `location` (`registration.py` — both Routines)
-- [ ] Every contract entity is accessible from the facade (`__all__ = ["register_hooks", "review_presets"]`,
+- [x] Every contract entity is implemented in the correct `location` (`registration.py` — both Routines)
+- [x] Every contract entity is accessible from the facade (`__all__ = ["register_hooks", "review_presets"]`,
       re-exported by identity)
-- [ ] Properties and methods match the declared API (signatures exactly `(hooks: HookRegistrar)` /
+- [x] Properties and methods match the declared API (signatures exactly `(hooks: HookRegistrar)` /
       `(context: ConfigAmendment)` → `None`; type hints mandatory)
-- [ ] Descriptions are reflected in behavior (the fixed guard message; the four `set` pairs in the fixed
+- [x] Descriptions are reflected in behavior (the fixed guard message; the four `set` pairs in the fixed
       order; guard strictly before any buffering; unconditional amendments; read footprint limited to the
       strategy chain; `force` never called)
-- [ ] Contract dependencies are met (`goga>=2.0` test-only; no runtime goga import; `TYPE_CHECKING` only)
-- [ ] Re-exports are accessible from the facade
-- [ ] Every coding task followed the TDD workflow (contract tests → code → verification → logic tests →
+- [x] Contract dependencies are met (`goga>=2.0` test-only; no runtime goga import; `TYPE_CHECKING` only)
+- [x] Re-exports are accessible from the facade
+- [x] Every coding task followed the TDD workflow (contract tests → code → verification → logic tests →
       debugging → re-verification → lint)
-- [ ] Contract tests and logic tests cover facade, API, and behavior within each coding task
-- [ ] Integration tests exist where cross-entity scenarios require them (Task 3 — real delivery, merge,
+- [x] Contract tests and logic tests cover facade, API, and behavior within each coding task
+- [x] Integration tests exist where cross-entity scenarios require them (Task 3 — real delivery, merge,
       and checkpoint)
-- [ ] No package boundary was expanded (no new cells, no new interfaces beyond the contract)
-- [ ] `CODEMANIFEST` files were not modified (contract is read-only);
+- [x] No package boundary was expanded (no new cells, no new interfaces beyond the contract)
+- [x] `CODEMANIFEST` files were not modified (contract is read-only);
       `goga_tool_complex_build/.usages/comprehensive-review.md` untouched
-- [ ] All validation commands pass (tests, lint, format check, facade check)
-- [ ] Every Usages entry is mentioned in at least one task (`conventions`, `hook_registration`,
+- [x] All validation commands pass (tests, lint, format check, facade check)
+- [x] Every Usages entry is mentioned in at least one task (`conventions`, `hook_registration`,
       `config_amendment`, `goga_dependency`)
-- [ ] Mandatory rules M1–M4 were followed throughout: coding style per `conventions`, test writing per
+- [x] Mandatory rules M1–M4 were followed throughout: coding style per `conventions`, test writing per
       `conventions`, ruff lint + format enforced after every edit / at every task end / before every local
       commit, and the REPL cycle (probe → hot-reload → evaluate → migrate to source files → re-verify)
       drove development in Tasks 1–3
-- [ ] Local commits exist only behind a green pre-commit gate, one commit per completed task
+- [x] Local commits exist only behind a green pre-commit gate, one commit per completed task
